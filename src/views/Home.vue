@@ -81,6 +81,7 @@
           class="w-100 flex justify-between hover:bg-lighter"
         >
           <div>
+            
             <p class="trend-top text-sm text-left">{{ trend.top }}</p>
             <p class="trend-title text-sm text-left">{{ trend.title }}</p>
             <p class="trend-bottom text-sm text-left">{{ trend.bottom }}</p>
