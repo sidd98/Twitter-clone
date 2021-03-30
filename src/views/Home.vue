@@ -1,7 +1,11 @@
 <template>
   <div class="d-flex container-fluid">
     <!-- side nav -->
-    <div class="left-side-bar px-8 py-2 flex flex-col col-sm-3 justify-between">
+    <div
+      v-if="$mq !== 'small'"
+      class="left-side-bar py-2 d-flex flex-column justify-between"
+      :class="$mq === 'large' ? 'w-50 px-6' : 'px-2'"
+    >
       <div class="navigation-sec">
         <button class="home-button h-12 w-12 mb-2">
           <font-awesome-icon :icon="{ prefix: 'fab', iconName: 'twitter' }" />
@@ -11,28 +15,36 @@
             v-for="(tab, id) in tabs"
             :key="id"
             @click="current = tab.id"
-            :class="`nav-button d-flex item-center mb-3 ${
+            :class="`nav-button d-flex align-items-center mb-3 ${
               current === tab.id ? 'clicked' : ''
             }`"
           >
             <font-awesome-icon
-              class="text-left mr-2"
+              class="text-left mr-4"
               :icon="{ prefix: 'fas', iconName: `${tab.icon}` }"
             />
-            <p class="text-left mb-0">{{ tab.title }}</p>
+            <p v-if="$mq === 'large'" class="text-left mb-0">{{ tab.title }}</p>
           </button>
-          <button class="tweet-btn p-2">Tweet</button>
+          <button class="tweet-btn p-2" :class="$mq === 'large' ? 'w-50' : 'tweet-icon'">
+            <p v-if="$mq === 'large'">Tweet</p>
+            <font-awesome-icon
+              v-else
+              class="text-left"
+              :icon="{ prefix: 'fas', iconName: 'plus' }"
+            />
+          </button>
         </div>
       </div>
 
-      <div class="profile-sec">
+      <div class="profile-sec px-0" :class="$mq === 'large' ? 'w-100' : null">
         <button class="d-flex items-center" @click="dropDown = !dropDown">
           <img class="profile-image mr-2" src="particpant.png" alt="" />
-          <div class="name-sec pt-2">
+          <div class="name-sec pt-2" v-if="$mq === 'large'">
             <p class="name mb-0">Siddhant Sajwan</p>
             <p class="hashtag">_@Siddhant</p>
           </div>
           <font-awesome-icon
+            v-if="$mq === 'large'"
             class="ml-3"
             :icon="{ prefix: 'fas', iconName: 'ellipsis-h' }"
           />
@@ -57,9 +69,164 @@
       </div>
     </div>
     <!-- tweet section -->
-    <div class="main-nav col-sm-5"></div>
+    <div class="main-nav px-0 h-100" :class="$mq === 'medium' ? 'w-75' : 'w-100'">
+      <div
+        class="top-tag px-2 py-3 d-flex items-center justify-content-between align-items-center"
+      >
+        <h3 class="home-tag">Home</h3>
+        <font-awesome-icon
+          class="ml-3"
+          :icon="{ prefix: 'fas', iconName: 'star' }"
+        />
+      </div>
+      <div class="tweet-post px-2 py-3 d-flex">
+        <div class="profile-pic">
+          <img src="particpant.png" class="" />
+        </div>
+        <form v-on:submit.prevent="addNewTweet" class="tweet-form w-100 px-4">
+          <textarea
+            v-model="tweet.content"
+            placeholder="What's Happening ?"
+            class="w-100 mt-3 mb-4"
+          />
+          <div class="d-flex justify-content-between">
+            <div class="icons d-flex item-center">
+              <font-awesome-icon
+                class="mr-4"
+                :icon="{ prefix: 'fas', iconName: 'image' }"
+              />
+              <font-awesome-icon
+                class="mr-4"
+                :icon="{ prefix: 'fas', iconName: 'film' }"
+              />
+              <font-awesome-icon
+                class="mr-4"
+                :icon="{ prefix: 'fas', iconName: 'smile' }"
+              />
+              <font-awesome-icon
+                class="mr-4"
+                :icon="{ prefix: 'fas', iconName: 'calendar' }"
+              />
+              <font-awesome-icon
+                class="mr-4"
+                :icon="{ prefix: 'fas', iconName: 'chart-bar' }"
+              />
+            </div>
+            <button type="submit" class="tweet-btn px-4">Tweet</button>
+          </div>
+        </form>
+      </div>
+      <div
+        v-for="(tweet, index) in tweets"
+        :key="index"
+        class="tweets w-100 px-4 py-4 d-flex"
+      >
+        <div class="profile flex-none mr-4">
+          <img src="particpant.png" class="flex-none" />
+        </div>
+        <div class="content w-100">
+          <div class="user-info d-flex items-center w-100">
+            <p class="follow-name">Siddhant Sajwan</p>
+            <p class="follow-handle ml-2">@_sidd06</p>
+            <p class="follow-time ml-2">1s</p>
+            <font-awesome-icon
+              class="more ml-auto"
+              :icon="{ prefix: 'fas', iconName: 'ellipsis-h' }"
+            />
+          </div>
+          <p class="py-2">
+            {{ tweet.content }}
+          </p>
+          <div
+            class="content-info d-flex items-center w-75 justify-content-between"
+          >
+            <div class="d-flex items-center">
+              <font-awesome-icon
+                class="mr-3"
+                :icon="{ prefix: 'fas', iconName: 'comment' }"
+              />
+              <p>0</p>
+            </div>
+            <div class="d-flex items-center">
+              <font-awesome-icon
+                class="mr-3"
+                :icon="{ prefix: 'fas', iconName: 'retweet' }"
+              />
+              <p>1</p>
+            </div>
+            <div class="d-flex items-center">
+              <font-awesome-icon
+                class="mr-3"
+                :icon="{ prefix: 'fas', iconName: 'heart' }"
+              />
+              <p>3</p>
+            </div>
+            <div class="d-flex items-center">
+              <font-awesome-icon
+                class="mr-3"
+                :icon="{ prefix: 'fas', iconName: 'share' }"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        v-for="(follow, index) in following"
+        :key="index"
+        class="tweets w-100 px-4 py-4 d-flex"
+      >
+        <div class="profile flex-none mr-4">
+          <img :src="follow.src" class="flex-none" />
+        </div>
+        <div class="content w-100">
+          <div class="user-info d-flex items-center w-100">
+            <p class="follow-name">{{ follow.name }}</p>
+            <p class="follow-handle ml-2">{{ follow.handle }}</p>
+            <p class="follow-time ml-2">{{ follow.time }}</p>
+            <font-awesome-icon
+              class="more ml-auto"
+              :icon="{ prefix: 'fas', iconName: 'ellipsis-h' }"
+            />
+          </div>
+          <p class="py-2">
+            {{ follow.tweet }}
+          </p>
+          <div
+            class="content-info d-flex items-center w-75 justify-content-between"
+          >
+            <div class="d-flex items-center">
+              <font-awesome-icon
+                class="mr-3"
+                :icon="{ prefix: 'fas', iconName: 'comment' }"
+              />
+              <p>{{ follow.comments }}</p>
+            </div>
+            <div class="d-flex items-center">
+              <font-awesome-icon
+                class="mr-3"
+                :icon="{ prefix: 'fas', iconName: 'retweet' }"
+              />
+              <p>{{ follow.retweets }}</p>
+            </div>
+            <div class="d-flex items-center">
+              <font-awesome-icon
+                class="mr-3"
+                :icon="{ prefix: 'fas', iconName: 'heart' }"
+              />
+              <p>{{ follow.like }}</p>
+            </div>
+            <div class="d-flex items-center">
+              <font-awesome-icon
+                class="mr-3"
+                :icon="{ prefix: 'fas', iconName: 'share' }"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- trending section -->
-    <div class="right-side-bar col-sm-4 py-2 px-6">
+    <div class="right-side-bar w-50 h-100 py-2 px-3" v-if="$mq === 'large'">
       <div class="search-box mb-4">
         <input
           class="search-tweet pl-5"
@@ -71,22 +238,48 @@
           :icon="{ prefix: 'fas', iconName: 'search' }"
         />
       </div>
-      <div class="trends">
-        <div class="flex items-center justify-between p-1">
+      <div class="trends w-100">
+        <div class="d-flex items-center justify-between p-2">
           <p class="trends-heading m-0 px-2">Trends For You</p>
         </div>
         <button
           v-for="(trend, index) in trends"
           :key="index"
-          class="w-100 flex justify-between hover:bg-lighter"
+          class="trends-btn w-100 d-flex justify-between px-3 py-1 border-lighter"
         >
-          <div>
-            
-            <p class="trend-top text-sm text-left">{{ trend.top }}</p>
-            <p class="trend-title text-sm text-left">{{ trend.title }}</p>
-            <p class="trend-bottom text-sm text-left">{{ trend.bottom }}</p>
+          <div class="trends-content w-100">
+            <p class="trend-top text-left leading-tight">{{ trend.top }}</p>
+            <p class="trend-title font-weight-bold text-left">
+              {{ trend.title }}
+            </p>
+            <p class="trend-bottom text-left">{{ trend.bottom }}</p>
           </div>
+          <font-awesome-icon
+            :icon="{ prefix: 'fas', iconName: 'ellipsis-h' }"
+          />
         </button>
+        <button class="show-more px-3 py-1 w-100 text-left">show more</button>
+      </div>
+
+      <div class="trends w-100 mt-4">
+        <div class="p-2">
+          <p class="trends-heading m-0 px-2">show more</p>
+        </div>
+        <button
+          v-for="(friend, index) in friends"
+          :key="index"
+          class="trends-btn w-100 d-flex px-3 py-1 border-lighter"
+        >
+          <div class="w-100 d-flex flex-row">
+            <img class="profile-image mr-2" :src="friend.src" alt="" />
+            <div class="name-sec mr-4 pt-2">
+              <p class="name mb-0">{{ friend.name }}</p>
+              <p>{{ friend.handle }}</p>
+            </div>
+          </div>
+          <button class="follow text-sm py-1 px-4">follow</button>
+        </button>
+        <button class="show-more px-3 py-1 w-100 text-left">show more</button>
       </div>
     </div>
   </div>
@@ -116,16 +309,87 @@ export default {
         { top: "Trending in US", title: "Denim Day", bottom: "40k tweets" },
         { top: "Trending", title: "When Beyonce", bottom: "25.4k tweets" },
       ],
+      friends: [
+        {
+          src: "https://randomuser.me/api/portraits/women/44.jpg",
+          name: "Elon Musk",
+          handle: "@teslaBoy",
+        },
+        {
+          src: "https://randomuser.me/api/portraits/men/4.jpg",
+          name: "Adrian Monk",
+          handle: "@detective:)",
+        },
+        {
+          src: "https://randomuser.me/api/portraits/women/76.jpg",
+          name: "Kevin Hart",
+          handle: "@miniRock",
+        },
+      ],
+      following: [
+        {
+          src: "https://randomuser.me/api/portraits/men/4.jpg",
+          name: "Elon Musk",
+          handle: "@teslaBoy",
+          time: "20 min",
+          tweet: "Should I just quarantine on mars??",
+          comments: "1,000",
+          retweets: "550",
+          like: "1,000,003",
+        },
+        {
+          src: "https://randomuser.me/api/portraits/women/76.jpg",
+          name: "Kevin Hart",
+          handle: "@miniRock",
+          time: "55 min",
+          tweet: "Should me and the rock do another sub-par movie together????",
+          comments: "2,030",
+          retweets: "50",
+          like: "20,003",
+        },
+        {
+          src: "https://randomuser.me/api/portraits/women/44.jpg",
+          name: "Elon Musk",
+          handle: "@teslaBoy",
+          time: "1.4 hr",
+          tweet: "Haha just made a flame thrower. Shld I sell them?",
+          comments: "100,000",
+          retweets: "1,000,002",
+          like: "5,000,003",
+        },
+        {
+          src: "https://randomuser.me/api/portraits/women/44.jpg",
+          name: "Elon Musk",
+          handle: "@teslaBoy",
+          time: "1.4 hr",
+          tweet: "Just did something crazyyyyyyy",
+          comments: "100,500",
+          retweets: "1,000,032",
+          like: "5,000,103",
+        },
+      ],
+      tweets: [{ content: "It is so nice outside!" }],
+      tweet: { content: "" },
       current: "home",
       dropDown: false,
     };
+  },
+  methods: {
+    addNewTweet() {
+      let newTweet = {
+        content: this.tweet.content,
+      };
+      this.tweets.unshift(newTweet);
+      this.tweet.content = "";
+    },
   },
 };
 </script>
 <style lang="scss" scoped>
 .left-side-bar {
+  height: 100%;
   text-align: left;
-  width: 30%;
+ // width: 30%;
   border-right: 1px solid lavender;
   .navigation-sec {
     margin-bottom: 90px;
@@ -140,6 +404,7 @@ export default {
   }
   .navigation {
     .nav-button {
+      font-size: 26px;
       align-items: center;
       border: 0;
       border-radius: 10px;
@@ -148,7 +413,6 @@ export default {
 
       p {
         font-weight: bold;
-        margin-top: 4px;
       }
 
       &.clicked {
@@ -162,8 +426,8 @@ export default {
     }
 
     .tweet-btn {
-      width: 56%;
-      height: 44px;
+      height: 50px;
+      width: 50px;
       color: white;
       background: rgb(29, 161, 242);
       border-radius: 25px;
@@ -238,8 +502,100 @@ export default {
   }
 }
 
+.main-nav {
+
+  .top-tag {
+    border-bottom: 1px solid #f7f9fa;
+    h3.home-tag {
+      font-weight: bold;
+    }
+    svg {
+      color: #56b0f3;
+    }
+  }
+
+  .tweet-post {
+    border-bottom: 10px solid #f7f9fa;
+    .profile-pic img {
+      width: 60px;
+      height: 60px;
+      border: 1px solid #f7f9fa;
+      border-radius: 50px;
+    }
+
+    form {
+      position: relative;
+      textarea {
+        resize: none;
+        border: none;
+        outline: none;
+      }
+
+      > div {
+        padding-bottom: 10px;
+        svg {
+          font-size: 1.2em;
+          color: #56b0f3;
+        }
+      }
+
+      button.tweet-btn {
+        color: #ebeef0;
+        height: 40px;
+        outline: none;
+        font-weight: bold;
+        background-color: #56b0f3;
+        border: 0;
+        border-radius: 30px;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+
+        &:hover {
+          background-color: #2c75ac;
+        }
+      }
+    }
+  }
+
+  .tweets {
+    border-bottom: 1px solid #ebeef0;
+    &:hover {
+      background-color: #ebeef0;
+    }
+    .profile {
+      flex: none;
+      img {
+        flex: none;
+        background-color: antiquewhite;
+        width: 60px;
+        height: 60px;
+        border: 1px solid #f7f9fa;
+        border-radius: 50px;
+      }
+    }
+
+    .content .user-info {
+      p.follow-name {
+        font-weight: bolder;
+      }
+      p.follow-handle,
+      p.follow-time,
+      svg {
+        color: #909aa1;
+      }
+    }
+
+    .content .content-info {
+      > div {
+        color: #909aa1;
+      }
+    }
+  }
+}
+
 .right-side-bar {
-  border-left: 1px solid lavender;
+  border-left: 1px solid #f7f9fa;
 
   .search-box {
     position: relative;
@@ -249,7 +605,7 @@ export default {
       width: 100%;
       border: 0;
       outline: none;
-      background: lavender;
+      background: #ebeef0;
       border-radius: 20px;
       height: inherit;
     }
@@ -264,12 +620,45 @@ export default {
   .trends {
     width: 100%;
     border-radius: 20px;
-    background-color: lavender;
+    background-color: #f7f9fa;
     > div {
       p.trends-heading {
         font-size: 25px;
         font-weight: bold;
       }
+    }
+    button {
+      outline: none;
+      background-color: #f7f9fa;
+      border: 0;
+      border-top: 1px solid #dddfe1;
+      justify-content: space-evenly;
+      .trends-content {
+        p {
+          font-size: 15px;
+          margin: 0;
+          &.trend-top {
+            color: #8e9194;
+          }
+        }
+      }
+      &.show-more {
+        color: #78a7ce;
+      }
+
+      img.profile-image {
+        border-radius: 25px;
+        width: 50px;
+        height: 50px;
+      }
+
+      .follow {
+        border-radius: 20px;
+        border: 1px solid #78a7ce;
+      }
+    }
+    button:hover {
+      background-color: #ecf0f5;
     }
   }
 }
