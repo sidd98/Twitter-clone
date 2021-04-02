@@ -15,7 +15,7 @@ Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 Vue.use(VueMq, {
   breakpoints: { // default breakpoints - customize this
-    small: 500,
+    small: 600,
     medium: 1000,
     large: Infinity,
   }
